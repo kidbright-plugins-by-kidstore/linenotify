@@ -19,9 +19,24 @@
 #include "driver.h"
 #include "device.h"
 
+#define TOKEN_SIZE 64
+#define MESSAGE_SIZE            200
+#define IMAGE_THUMBNAIL_SIZE    100
+#define IMAGE_FULLSIZE_SIZE     100
+#define STICKER_PACKAGE_ID_SIZE 10
+#define STICKER_ID_SIZE         10
+
+#define AUTH_SIZE 100
+#define POST_DATA_BUFFER_SIZE 512
+
 class LINENotify : public Device {
 	private:		
-		char *access_token;
+		char access_token[TOKEN_SIZE];
+		char message[MESSAGE_SIZE];
+		char imageThumbnail[IMAGE_THUMBNAIL_SIZE];
+		char imageFullsize[IMAGE_FULLSIZE_SIZE];
+		char stickerPackageId[STICKER_PACKAGE_ID_SIZE];
+		char stickerId[STICKER_ID_SIZE];
 
 	public:
 		// constructor
@@ -38,8 +53,26 @@ class LINENotify : public Device {
 		bool prop_write(int index, char *value);
 		
 		// method
-		void setAccessToken(const char *) ;
-		void notify(const char *, const char *, const char *, const char *, const char *) ;
+		void setAccessToken(char*) ;
+		
+		void setMessage(char*) ;
+		void setMessage(int) ;
+		void setMessage(double) ;
+		void setMessage(bool) ;
+		
+		void setImageThumbnail(char*) ;
+		
+		void setImageFullsize(char*) ;
+		
+		void setStickerPackageID(char*);
+		void setStickerPackageID(int);
+		void setStickerPackageID(double);
+		
+		void setStickerID(char*);
+		void setStickerID(int);
+		void setStickerID(double);
+		
+		void notify() ;
 		
 };
 

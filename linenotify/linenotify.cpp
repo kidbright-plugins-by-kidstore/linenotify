@@ -10,13 +10,7 @@ static const char *TAG = "LINENotify";
   Sonthaya Nongnuch : fb.me/maxthai
 */
 
-#define TOKEN_SIZE 64
-#define AUTH_SIZE 100
-#define POST_DATA_BUFFER_SIZE 512
-
-LINENotify::LINENotify() {
-	this->access_token = (char*) malloc(TOKEN_SIZE);
-}
+LINENotify::LINENotify() { }
 
 void LINENotify::init(void) {
 	
@@ -64,34 +58,97 @@ void LINENotify::process(Driver *drv) {
 
 // Start here
 // Method
-void LINENotify::setAccessToken(const char *token) {
+void LINENotify::setAccessToken(char *token) {
 	memset(this->access_token, 0, TOKEN_SIZE);
 	strcpy(this->access_token, token);
 }
 
-void LINENotify::notify(const char *message, const char *imageThumbnail, const char *imageFullsize, const char *stickerPackageId, const char *stickerId) {
+void LINENotify::setMessage(char* message) {
+	strcpy(this->message, message);
+}
+
+void LINENotify::setMessage(int n) {
+	itoa(n, this->message, 10);
+}
+
+void LINENotify::setMessage(double n) {
+	sprintf(this->message, "%f", n);
+	
+	// check ending zero
+	int i = strlen(this->message) - 1;
+	while (i >= 0) {
+		if (this->message[i] == '0') {
+			this->message[i] = '\x0';
+		} else if (this->message[i] == '.') {
+			this->message[i] = '\x0';
+			break;
+		} else {
+			break; // first occurence of non-zero or dot
+		}
+		i--;
+	}
+}
+
+void LINENotify::setMessage(bool x) {
+	this->message[0] = x ? '1' : '0';
+	this->message[1] = 0;
+}
+
+void LINENotify::setImageThumbnail(char* imageThumbnail) {
+	strcpy(this->imageThumbnail, imageThumbnail);
+}
+
+void LINENotify::setImageFullsize(char* imageFullsize) {
+	strcpy(this->imageFullsize, imageFullsize);
+}
+
+void LINENotify::setStickerPackageID(char* stickerPackageId) {
+	strcpy(this->stickerPackageId, stickerPackageId);
+}
+
+void LINENotify::setStickerPackageID(int n) {
+	itoa(n, this->stickerPackageId, 10);
+}
+
+void LINENotify::setStickerPackageID(double n) {
+	this->setStickerPackageID((int) n);
+}
+
+void LINENotify::setStickerID(char* stickerId) {
+	strcpy(this->stickerId, stickerId);
+}
+
+void LINENotify::setStickerID(int n) {
+	itoa(n, this->stickerId, 10);
+}
+
+void LINENotify::setStickerID(double n) {
+	this->setStickerID((int) n);
+}
+
+void LINENotify::notify() {
 	char *strAuthorization = (char *)malloc(AUTH_SIZE);
 	char *post_data = (char *)malloc(POST_DATA_BUFFER_SIZE);
 	
 	// Post data
 	memset(post_data, 0, POST_DATA_BUFFER_SIZE);
 	strcpy(post_data, "message=");
-	strcat(post_data, message);
-	if (strlen(imageThumbnail) > 0) {
+	strcat(post_data, this->message);
+	if (strlen(this->imageThumbnail) > 0) {
 		strcat(post_data, "&imageThumbnail=");
-		strcat(post_data, imageThumbnail);
+		strcat(post_data, this->imageThumbnail);
 	}
-	if (strlen(imageFullsize) > 0) {
+	if (strlen(this->imageFullsize) > 0) {
 		strcat(post_data, "&imageFullsize=");
-		strcat(post_data, imageFullsize);
+		strcat(post_data, this->imageFullsize);
 	}
-	if (strlen(stickerPackageId) > 0) {
+	if (strlen(this->stickerPackageId) > 0) {
 		strcat(post_data, "&stickerPackageId=");
-		strcat(post_data, stickerPackageId);
+		strcat(post_data, this->stickerPackageId);
 	}
-	if (strlen(stickerId) > 0) {
+	if (strlen(this->stickerId) > 0) {
 		strcat(post_data, "&stickerId=");
-		strcat(post_data, stickerId);
+		strcat(post_data, this->stickerId);
 	}
 	
 	// Authorization
@@ -120,6 +177,12 @@ void LINENotify::notify(const char *message, const char *imageThumbnail, const c
 	
 	free(strAuthorization);
 	free(post_data);
+	
+	memset(message, 0, sizeof message);
+	memset(imageThumbnail, 0, sizeof imageThumbnail);
+	memset(imageFullsize, 0, sizeof imageFullsize);
+	memset(stickerPackageId, 0, sizeof stickerPackageId);
+	memset(stickerId, 0, sizeof stickerId);
 }
 
 #endif
